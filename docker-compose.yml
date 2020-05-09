@@ -1,0 +1,29 @@
+version: "3.7"
+
+services:
+
+  # postgres:
+  #   image: postgres:alpine
+  #   enviroment: 
+  #     POSTGRES_PASSWORD: postgres
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_DB: db
+  #   volumes: 
+  #     - ./postgres:/var/lib/postgresql/data
+
+  webapi:
+    build: ./BookingService.WebApi/
+    ports: 
+      - "8080:80"
+
+  client: 
+    build: ./BookingService.Client/ 
+    volumes:
+      - ./BookingService.Client/out:/out
+    working_dir: /app/
+    command: /bin/sh /app/copy.sh
+
+  tg_bot:
+    build: ./BookingService.TgBot/
+    stdin_open: true
+    tty: true
