@@ -13,8 +13,9 @@ services:
 
   webapi:
     build: ./BookingService.WebApi/
-    ports: 
+    ports:
       - "8080:80"
+      # - "8443:443"
 
   client: 
     build: ./BookingService.Client/ 
