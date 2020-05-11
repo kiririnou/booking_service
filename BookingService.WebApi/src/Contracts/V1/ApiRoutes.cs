@@ -1,7 +1,7 @@
 namespace BookingService.WebApi.Contracts.V1
 {
     // TODO: check maybe something needs to be deleted
-    // TODO: add authorization Countries, Flights, Users
+    // TODO: add authorization for Countries, Flights, Users
     // TODO: maybe move previous TODO to another place? 
     public static class ApiRoutes
     {
@@ -20,29 +20,29 @@ namespace BookingService.WebApi.Contracts.V1
 
         public static class Flights
         {
-            public const string GetAll  = Base + "/countries";
-            public const string Create  = Base + "/countries";
-            public const string Get     = Base + "/countries/{id}";
-            public const string Update  = Base + "/countries/{id}";
-            public const string Delete  = Base + "/countries/{id}";
+            public const string GetAll  = Base + "/flights";
+            public const string Create  = Base + "/flights";
+            public const string Get     = Base + "/flights/{id}";
+            public const string Update  = Base + "/flights/{id}";
+            public const string Delete  = Base + "/flights/{id}";
         }
 
         public static class Reservations
         {
-            public const string GetAll  = Base + "/countries";
-            public const string Create  = Base + "/countries";
-            public const string Get     = Base + "/countries/{id}";
-            public const string Update  = Base + "/countries/{id}";
-            public const string Delete  = Base + "/countries/{id}";
+            public const string GetAll  = Base + "/reservations";
+            public const string Create  = Base + "/reservations";
+            public const string Get     = Base + "/reservations/{id}";
+            public const string Update  = Base + "/reservations/{id}";
+            public const string Delete  = Base + "/reservations/{id}";
         }
 
         public static class Users
         {
-            public const string GetAll  = Base + "/countries";
-            public const string Create  = Base + "/countries";
-            public const string Get     = Base + "/countries/{id}";
-            public const string Update  = Base + "/countries/{id}";
-            public const string Delete  = Base + "/countries/{id}";
+            public const string GetAll  = Base + "/users";
+            public const string Create  = Base + "/users";
+            public const string Get     = Base + "/users/{id}";
+            public const string Update  = Base + "/users/{id}";
+            public const string Delete  = Base + "/users/{id}";
         }
     }
 }
