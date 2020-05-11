@@ -21,12 +21,12 @@ namespace BookingService.WebApi.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder
-                    .UseLazyLoadingProxies()
-                    .UseNpgsql("");
-            }
+            // if (!optionsBuilder.IsConfigured)
+            // {
+            //     optionsBuilder
+            //         .UseLazyLoadingProxies()
+            //         .UseNpgsql("");
+            // }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BookingService.WebApi.Installers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -25,14 +26,7 @@ namespace BookingService.WebApi
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
-
-            // TODO: add installer for services
-            services.AddDbContext<Models.dbContext>(options =>
-                options.UseNpgsql(
-                    Configuration.GetConnectionString("DefaultConnection")
-                )
-            );
+            services.InstallServices(Configuration);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
