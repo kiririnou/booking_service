@@ -18,7 +18,9 @@ namespace BookingService.WebApi.Installers
             );
 
             services.AddScoped<ICountryService, CountryService>();
-            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IUserService, UserService>();            
+            services.AddScoped<IFlightService, FlightService>();
+
         }
     }
 }

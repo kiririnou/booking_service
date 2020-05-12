@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using BookingService.WebApi.Contracts.V1;
 using BookingService.WebApi.Contracts.V1.Requests;
@@ -22,7 +23,13 @@ namespace BookingService.WebApi.Controllers
         [HttpGet(ApiRoutes.Country.GetAll)]
         public async Task<IActionResult> GetAll()
         {
-            return Ok(await _countryService.GetCountriesAsync());
+            var countries = await _countryService.GetCountriesAsync();
+            var countriesResponses = countries.Select(country => new CountryResponse
+            {
+                Id = country.Id,
+                Name = country.Name
+            }).ToList();
+            return Ok(countriesResponses);
         }
 
         [HttpGet(ApiRoutes.Country.Get)]
@@ -31,7 +38,11 @@ namespace BookingService.WebApi.Controllers
             var country = await _countryService.GetCountryByIdAsync(id);
             if (country == null)
                 return NotFound();
-            return Ok(country);
+            return Ok(new CountryResponse
+            {
+                Id = country.Id,
+                Name = country.Name
+            });
         }
 
         [HttpPost(ApiRoutes.Country.Create)]
@@ -41,14 +52,18 @@ namespace BookingService.WebApi.Controllers
 
             await _countryService.CreateCountryAsync(country);
 
-            var url = String.Format(
+            var url = string.Format(
                 "{0}://{1}{2}",
                 HttpContext.Request.Scheme,
                 HttpContext.Request.Host.ToUriComponent(),
                 ApiRoutes.Country.Get.Replace("{id}", country.Id.ToString())
             );
 
-            var response = new CountryResponse { Id = country.Id };
+            var response = new CountryResponse
+            {
+                Id = country.Id,
+                Name =  country.Name
+            };
 
             return Created(url, response);
         }
@@ -63,7 +78,11 @@ namespace BookingService.WebApi.Controllers
             };
 
             if (await _countryService.UpdateCountryAsync(country))
-                return Ok(country);
+                return Ok(new CountryResponse
+                {
+                    Id = country.Id,
+                    Name = country.Name
+                });
             return NotFound();
         }
 

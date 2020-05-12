@@ -5,9 +5,9 @@ namespace BookingService.WebApi.Contracts.V1
     // TODO: maybe move previous TODO to another place? 
     public static class ApiRoutes
     {
-        public const string Root        = "api";
-        public const string Version     = "v1";
-        public const string Base        = Root + "/" + Version;
+        private const string Root       = "api";
+        private const string Version    = "v1";
+        private const string Base       = Root + "/" + Version;
 
         public static class Country
         {

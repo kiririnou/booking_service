@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using BookingService.WebApi.Contracts.V1;
 using BookingService.WebApi.Contracts.V1.Requests;
@@ -21,7 +22,13 @@ namespace BookingService.WebApi.Controllers
         [HttpGet(ApiRoutes.User.GetAll)]
         public async Task<IActionResult> GetAll()
         {
-            return Ok(await _userService.GetUsersAsync());
+            var users = await _userService.GetUsersAsync();
+            var usersResponse = users.Select(user => new UserResponse
+            {
+                Id = user.Id,
+                Name = user.Name
+            }).ToList();
+            return Ok(usersResponse);
         }
 
         [HttpGet(ApiRoutes.User.Get)]
@@ -30,7 +37,11 @@ namespace BookingService.WebApi.Controllers
             var user = await _userService.GetUserByIdAsync(id);
             if (user == null)
                 return NotFound();
-            return Ok(user);
+            return Ok(new UserResponse
+            {
+                Id = user.Id,
+                Name = user.Name
+            });
         }
 
         [HttpPost(ApiRoutes.User.Create)]
@@ -44,10 +55,14 @@ namespace BookingService.WebApi.Controllers
                 "{0}://{1}{2}",
                 HttpContext.Request.Scheme,
                 HttpContext.Request.Host.ToUriComponent(),
-                ApiRoutes.Country.Get.Replace("{id}", user.Id.ToString())
+                ApiRoutes.User.Get.Replace("{id}", user.Id.ToString())
             );
 
-            var response = new UserResponse { Id = user.Id };
+            var response = new UserResponse
+            {
+                Id = user.Id,
+                Name = user.Name
+            };
 
             return Created(url, response);
         }
@@ -62,7 +77,11 @@ namespace BookingService.WebApi.Controllers
             };
 
             if (await _userService.UpdateUserAsync(user))
-                return Ok(user);
+                return Ok(new UserResponse
+                {
+                    Id = user.Id,
+                    Name = user.Name
+                });
             return NotFound();
         }
 
