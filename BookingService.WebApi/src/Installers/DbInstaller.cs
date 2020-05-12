@@ -1,3 +1,4 @@
+using BookingService.WebApi.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,6 +16,8 @@ namespace BookingService.WebApi.Installers
                         configuration.GetConnectionString("DefaultConnection")
                     )
             );
+
+            services.AddScoped<ICountryService, CountryService>();
         }
     }
 }

@@ -9,7 +9,7 @@ namespace BookingService.WebApi.Contracts.V1
         public const string Version     = "v1";
         public const string Base        = Root + "/" + Version;
 
-        public static class Countries
+        public static class Country
         {
             public const string GetAll  = Base + "/countries";
             public const string Create  = Base + "/countries";
@@ -18,7 +18,7 @@ namespace BookingService.WebApi.Contracts.V1
             public const string Delete  = Base + "/countries/{id}";
         }
 
-        public static class Flights
+        public static class Flight
         {
             public const string GetAll  = Base + "/flights";
             public const string Create  = Base + "/flights";
@@ -27,7 +27,7 @@ namespace BookingService.WebApi.Contracts.V1
             public const string Delete  = Base + "/flights/{id}";
         }
 
-        public static class Reservations
+        public static class Reservation
         {
             public const string GetAll  = Base + "/reservations";
             public const string Create  = Base + "/reservations";
@@ -36,7 +36,7 @@ namespace BookingService.WebApi.Contracts.V1
             public const string Delete  = Base + "/reservations/{id}";
         }
 
-        public static class Users
+        public static class User
         {
             public const string GetAll  = Base + "/users";
             public const string Create  = Base + "/users";

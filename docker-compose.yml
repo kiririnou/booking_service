@@ -2,20 +2,26 @@ version: "3.7"
 
 services:
 
-  # postgres:
-  #   image: postgres:alpine
-  #   enviroment: 
-  #     POSTGRES_PASSWORD: postgres
-  #     POSTGRES_USER: postgres
-  #     POSTGRES_DB: db
-  #   volumes: 
-  #     - ./postgres:/var/lib/postgresql/data
+  postgres:
+    image: postgres:alpine
+    environment: 
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: db
+    volumes: 
+      - ./postgres:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - "k-network"
 
   webapi:
     build: ./BookingService.WebApi/
     ports:
       - "8080:80"
       # - "8443:443"
+    networks:
+      - "k-network"
 
   client: 
     build: ./BookingService.Client/ 
@@ -28,3 +34,7 @@ services:
     build: ./BookingService.TgBot/
     stdin_open: true
     tty: true
+
+networks:
+  k-network:
+    driver: bridge
