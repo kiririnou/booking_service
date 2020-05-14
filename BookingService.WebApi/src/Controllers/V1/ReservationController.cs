@@ -56,7 +56,7 @@ namespace BookingService.WebApi.Controllers
             return Ok(reservationResponse);
         }
 
-        [HttpGet(ApiRoutes.User.Get)]
+        [HttpGet(ApiRoutes.Reservation.Get)]
         public async Task<IActionResult> Get([FromRoute] int id)
         {
             var reservation = await _reservationService.GetReservationByIdAsync(id);

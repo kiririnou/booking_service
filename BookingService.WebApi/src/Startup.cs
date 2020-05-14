@@ -12,6 +12,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Swashbuckle.AspNetCore.Swagger;
+using BookingService.WebApi.Options;
+using SwaggerOptions = BookingService.WebApi.Options.SwaggerOptions;
 
 namespace BookingService.WebApi
 {
@@ -42,6 +45,20 @@ namespace BookingService.WebApi
 
             app.UseAuthorization();
 
+            var swaggerOptions = new SwaggerOptions();
+            Configuration.GetSection(nameof(SwaggerOptions)).Bind(swaggerOptions);
+            
+            app.UseSwagger(option =>
+            {
+                option.RouteTemplate = swaggerOptions.JsonRoute;
+            });
+
+            app.UseSwaggerUI(option =>
+            {
+                option.SwaggerEndpoint(swaggerOptions.UiEndpoint, swaggerOptions.Description);
+                option.RoutePrefix = string.Empty;
+            });
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
