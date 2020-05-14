@@ -2,7 +2,7 @@ namespace BookingService.WebApi.Contracts.V1.Requests
 {
     public class UpdateFlightRequest
     {
-        public System.DateTime Departure { get; set; }
+        public string Departure { get; set; }
 
         public int FromId                { get; set; }
 

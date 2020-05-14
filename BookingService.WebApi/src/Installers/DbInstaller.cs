@@ -1,3 +1,4 @@
+using BookingService.WebApi.Contracts.V1;
 using BookingService.WebApi.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -20,7 +21,7 @@ namespace BookingService.WebApi.Installers
             services.AddScoped<ICountryService, CountryService>();
             services.AddScoped<IUserService, UserService>();            
             services.AddScoped<IFlightService, FlightService>();
-
+            services.AddScoped<IReservationService, ReservationService>();
         }
     }
 }

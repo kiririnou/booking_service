@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using BookingService.WebApi.Contracts.V1;
@@ -13,10 +14,12 @@ namespace BookingService.WebApi.Controllers
     public class FlightController : ControllerBase
     {
         private readonly IFlightService _flightService;
+        private readonly ICountryService _countryService;
         
-        public FlightController(IFlightService flightService)
+        public FlightController(IFlightService flightService, ICountryService countryService)
         {
             _flightService = flightService;
+            _countryService = countryService;
         }
         
         [HttpGet(ApiRoutes.Flight.GetAll)]
@@ -67,11 +70,16 @@ namespace BookingService.WebApi.Controllers
         [HttpPost(ApiRoutes.Flight.Create)]
         public async Task<IActionResult> Post([FromBody] CreateFlightRequest request)
         {
+            if (request == null)
+                throw new Exception("Request if fucking null");
+            
             var flight = new Flight
             {
-                Departure = request.Depature,
+                Departure = DateTime.ParseExact(request.Departure, "dd-MM-yyyy HH:mm:ss", CultureInfo.InvariantCulture),
                 FromId = request.FromId,
-                ToId = request.ToId
+                From = await _countryService.GetCountryByIdAsync(request.FromId),
+                ToId = request.ToId,
+                To = await _countryService.GetCountryByIdAsync(request.ToId)
             };
 
             await _flightService.CreateFlightAsync(flight);
@@ -108,7 +116,7 @@ namespace BookingService.WebApi.Controllers
             var flight = new Flight
             {
                 Id = id,
-                Departure = request.Departure,
+                Departure = DateTime.ParseExact(request.Departure, "dd-MM-yyyy HH:mm:ss", CultureInfo.InvariantCulture),
                 FromId = request.FromId,
                 ToId = request.ToId
             };
