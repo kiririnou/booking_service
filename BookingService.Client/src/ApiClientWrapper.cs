@@ -10,21 +10,11 @@ namespace BookingService.Client
     public partial class ApiClientWrapper : IUser, ICountry, IFlight, IReservation
     {
         private static readonly HttpClient Client = new HttpClient();
-        private readonly string URL;
+        private readonly string _url;
 
-        private List<Reservation>         _reservations = new List<Reservation>();
-        private List<Flight>              _flights      = new List<Flight>();
-        private List<Country>             _countries    = new List<Country>();
-        private List<User>                _users        = new List<User>();
-        
-        public IReadOnlyList<Reservation> Reservations { get => _reservations.AsReadOnly(); }
-        public IReadOnlyList<Flight>      Flights      { get => _flights.AsReadOnly(); }
-        public IReadOnlyList<Country>     Countries    { get => _countries.AsReadOnly(); }
-        public IReadOnlyList<User>        Users        { get => _users.AsReadOnly(); }
-        
         public ApiClientWrapper(string url)
         {
-            URL = url;
+            _url = url + "/v1/api";
         }
     }
 }

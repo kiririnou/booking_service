@@ -1,3 +1,7 @@
+using System;
+using System.Net.Http;
+using System.Runtime.CompilerServices;
+
 namespace BookingService.Client.Models
 {
     public class User
