@@ -10,9 +10,7 @@ namespace BookingService.TgBot
 
         public static string GetEntry(string entry)
         {
-            if (_configuration == null)
-                _configuration = Initialize();
-            
+            _configuration ??= Initialize();
             return _configuration[entry];
         }
 

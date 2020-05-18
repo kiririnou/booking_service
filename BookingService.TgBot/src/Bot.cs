@@ -13,7 +13,7 @@ namespace BookingService.TgBot
     public static class Bot
     {
         private static TelegramBotClient _client;
-        private static List<Command> _commands;
+        private static List<Command>     _commands;
 
         public static IReadOnlyList<Command> Commands { get => _commands.AsReadOnly(); }
 
@@ -21,10 +21,10 @@ namespace BookingService.TgBot
         {
             if (_client == null)
                 Initialize();
+            
             var username = _client.GetMeAsync().GetAwaiter().GetResult().Username;
             var id = _client.GetMeAsync().GetAwaiter().GetResult().Id;
             
-            // Logger.Get().Information($"{AppSettings.GetEntry("BotName")} started...");
             Logger.Get().Information($"Bot: {username}\tId: {id.ToString()}");
             Logger.Get().Information($"Bot started...");
             _client.StartReceiving();
