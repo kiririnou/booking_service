@@ -1,7 +1,7 @@
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
-namespace BookingService.TgBot
+namespace BookingService.TgBot.Commands
 {
     public abstract class Command
     {

@@ -18,6 +18,7 @@ Service consists of:
  - Telegram bot for clients
 
 Available commands:
+ - /start
  - /help
 ---
 ### Development 

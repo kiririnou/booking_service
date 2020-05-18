@@ -9,9 +9,7 @@ namespace BookingService.TgBot
 
         public static ILogger Get()
         {
-            if (_logger == null)
-                _logger = Initialize();
-            return _logger;
+            return _logger ??= Initialize();
         } 
 
         private static Serilog.Core.Logger Initialize()
