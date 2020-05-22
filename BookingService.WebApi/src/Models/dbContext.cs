@@ -12,6 +12,7 @@ namespace BookingService.WebApi.Models
         public dbContext(DbContextOptions<dbContext> options)
             : base(options)
         {
+			Database.EnsureCreated();
         }
 
         public DbSet<Reservation> Reservations  { get; set; }

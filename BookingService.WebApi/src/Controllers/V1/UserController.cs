@@ -26,7 +26,8 @@ namespace BookingService.WebApi.Controllers
             var usersResponse = users.Select(user => new UserResponse
             {
                 Id = user.Id,
-                Name = user.Name
+                Name = user.Name,
+                TgUid = user.TgUid
             }).ToList();
             return Ok(usersResponse);
         }
@@ -40,14 +41,15 @@ namespace BookingService.WebApi.Controllers
             return Ok(new UserResponse
             {
                 Id = user.Id,
-                Name = user.Name
+                Name = user.Name,
+                TgUid = user.TgUid
             });
         }
 
         [HttpPost(ApiRoutes.User.Create)]
         public async Task<IActionResult> Post([FromBody] CreateUserRequest request)
         {
-            var user = new User { Name = request.Name };
+            var user = new User { Name = request.Name, TgUid = request.TgUid };
 
             await _userService.CreateUserAsync(user);
 
@@ -61,7 +63,8 @@ namespace BookingService.WebApi.Controllers
             var response = new UserResponse
             {
                 Id = user.Id,
-                Name = user.Name
+                Name = user.Name,
+                TgUid = user.TgUid
             };
 
             return Created(url, response);
@@ -73,14 +76,16 @@ namespace BookingService.WebApi.Controllers
             var user = new User
             {
                 Id = id,
-                Name = request.Name
+                Name = request.Name,
+                TgUid = request.TgUid
             };
 
             if (await _userService.UpdateUserAsync(user))
                 return Ok(new UserResponse
                 {
                     Id = user.Id,
-                    Name = user.Name
+                    Name = user.Name,
+                    TgUid = user.TgUid
                 });
             return NotFound();
         }

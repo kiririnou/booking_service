@@ -14,7 +14,7 @@ namespace BookingService.Client
 
         public ApiClientWrapper(string url)
         {
-            _url = url + "/v1/api";
+            _url = url + "/api/v1";
         }
     }
 }

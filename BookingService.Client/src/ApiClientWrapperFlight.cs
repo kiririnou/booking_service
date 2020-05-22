@@ -11,8 +11,10 @@ namespace BookingService.Client
     {
         public async Task<List<Flight>> GetFlightsAsync()
         {
-            var response = await Client.GetStringAsync($"{_url}/flights");
-            var flights = JsonConvert.DeserializeObject<List<Flight>>(response);
+            var response = await Client.GetAsync($"{_url}/flights");
+            if (!response.IsSuccessStatusCode)
+                return null;
+            var flights = JsonConvert.DeserializeObject<List<Flight>>(await response.Content.ReadAsStringAsync());
             return flights;
         }
 
@@ -27,15 +29,29 @@ namespace BookingService.Client
 
         public async Task<bool> CreateFlightAsync(Flight flight)
         {
+            var newFlight = new NewFlight
+            {
+                Departure = flight.Departure,
+                FromId = flight.From.Id,
+                ToId = flight.To.Id
+            };
+            
             var response = await Client.PostAsync(
                 $"{_url}/flights", 
-                new StringContent(JsonConvert.SerializeObject(flight))
+                new StringContent(JsonConvert.SerializeObject(newFlight))
             );
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<bool> UpdateFlightAsync(Flight newFlight)
+        public async Task<bool> UpdateFlightAsync(Flight flight)
         {
+            var newFlight = new NewFlight
+            {
+                Departure = flight.Departure,
+                FromId = flight.From.Id,
+                ToId = flight.To.Id
+            };
+            
             var response = await Client.PutAsync(
                 $"{_url}/flights",
                 new StringContent(JsonConvert.SerializeObject(newFlight))

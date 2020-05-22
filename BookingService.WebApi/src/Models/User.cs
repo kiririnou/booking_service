@@ -8,6 +8,7 @@ namespace BookingService.WebApi.Models
         [Key]
         public int Id               { get; set; }
         public string Name          { get; set; }
+        public string TgUid        { get; set; }
 
         public virtual ICollection<Reservation> Reservations { get; set; }
     }

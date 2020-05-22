@@ -11,8 +11,10 @@ namespace BookingService.Client
     {
         public async Task<List<Country>> GetCountriesAsync()
         {
-            var response = await Client.GetStringAsync($"{_url}/countries");
-            var countries = JsonConvert.DeserializeObject<List<Country>>(response);
+            var response = await Client.GetAsync($"{_url}/countries");
+            if (!response.IsSuccessStatusCode)
+                return null;
+            var countries = JsonConvert.DeserializeObject<List<Country>>(await response.Content.ReadAsStringAsync());
             return countries;
         }
 
@@ -27,15 +29,25 @@ namespace BookingService.Client
 
         public async Task<bool> CreateCountryAsync(Country country)
         {
+            var newCountry = new NewCountry
+            {
+                Name = country.Name
+            };
+            
             var response = await Client.PostAsync(
                 $"{_url}/countries", 
-                new StringContent(JsonConvert.SerializeObject(country))
+                new StringContent(JsonConvert.SerializeObject(newCountry))
             );
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<bool> UpdateCountryAsync(Country newCountry)
+        public async Task<bool> UpdateCountryAsync(Country country)
         {
+            var newCountry = new NewCountry
+            {
+                Name = country.Name
+            }; 
+            
             var response = await Client.PutAsync(
                 $"{_url}/countries",
                 new StringContent(JsonConvert.SerializeObject(newCountry))
