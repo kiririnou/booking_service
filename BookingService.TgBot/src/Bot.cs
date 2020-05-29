@@ -3,10 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+using BookingService.TgBot.Callbacks;
 using BookingService.TgBot.Commands;
+using BookingService.TgBot.StateMachine;
 using Telegram.Bot;
 using Telegram.Bot.Args;
 using Telegram.Bot.Types.Enums;
+
+using UserFSMContainer = System.Collections.Generic.Dictionary<long, BookingService.TgBot.StateMachine.UserStateMachine>;
 
 namespace BookingService.TgBot
 {
@@ -14,8 +18,12 @@ namespace BookingService.TgBot
     {
         private static TelegramBotClient _client;
         private static List<Command>     _commands;
+        private static List<Callback>    _callbacks;
 
-        public static IReadOnlyList<Command> Commands { get => _commands.AsReadOnly(); }
+        internal static UserFSMContainer UserStates;
+
+        public static IReadOnlyList<Command> Commands   { get => _commands.AsReadOnly();  }
+        public static IReadOnlyList<Callback> Callbacks { get => _callbacks.AsReadOnly(); }
 
         public static void Start()
         {
@@ -38,35 +46,78 @@ namespace BookingService.TgBot
         {
             _client = new TelegramBotClient(AppSettings.GetEntry("BotToken"));
 
-            // Now all commands (except ErrorCommand) will be automatically added
-            // and we don't need to worry about new ones
-            // Reflection is power!
+            //* Now all commands (except ErrorCommand) will be automatically added
+            //* and we don't need to worry about new ones
+            //* Reflection is power!
             _commands = Assembly.GetAssembly(typeof(Command))?
                 .GetTypes()
-                .Where(t => typeof(Command).IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract &&
+                .Where(t => typeof(Command).IsAssignableFrom(t) && 
+                            !t.IsInterface && 
+                            !t.IsAbstract &&
                             t.Name != "ErrorCommand")
                 .Select(Activator.CreateInstance)
                 .Cast<Command>()
                 .ToList();
 
-            _client.OnMessage += Handle;
+            _callbacks = Assembly.GetAssembly(typeof(Callback))
+                .GetTypes()
+                .Where(t => typeof(Callback).IsAssignableFrom(t) &&
+                            !t.IsInterface &&
+                            !t.IsAbstract &&
+                            t.Name != "ErrorCallback")
+                .Select(Activator.CreateInstance)
+                .Cast<Callback>()
+                .ToList();
+
+            UserStates = new UserFSMContainer();
+
+            _client.OnMessage       += OnMessage;
+            _client.OnCallbackQuery += OnCallbackQuery;
 
             Logger.Get().Information("Bot initialization completed!");
         }
 
-        private static void Handle(object sender, MessageEventArgs e)
+        private static async void OnMessage(object sender, MessageEventArgs e)
         {
-            Logger.Get().Information($"{e.Message.From.FirstName}: {e.Message.Text}");
+            Logger.Get().Information($"[Message] {e.Message.From.FirstName}: {e.Message.Text}");
 
-            Logger.Get().Debug($"_commands count: {_commands.Count.ToString()}");
-            Logger.Get().Debug($"e.Message.Text: {e.Message.Text}");
+            if (e.Message.ReplyToMessage != null)
+                if (e.Message.ReplyToMessage.From.IsBot)
+                {
+                    await _callbacks
+                        .Where(c => c.Query.Contains("fromCountry"))
+                        .SingleOrDefault()
+                        .Execute(e.Message, _client, e.Message.From);
+                    return;
+                }
 
             if (e.Message.Type == MessageType.Text)
                 _commands
-                .Where(c => c.Contains(e.Message.Text))
-                .DefaultIfEmpty(new ErrorCommand())
-                .First()
-                .Execute(e.Message, _client);
+                    .Where(c => c.Contains(e.Message.Text))
+                    .DefaultIfEmpty(new ErrorCommand())
+                    .Single()
+                    .Execute(e.Message, _client);
+        }
+
+        private static async void OnCallbackQuery(object sender, CallbackQueryEventArgs e)
+        {
+            Logger.Get().Information($"[Callback] {e.CallbackQuery.From.FirstName}: {e.CallbackQuery.Data}");
+
+            // Logger.Get().Debug($"{e.CallbackQuery.Data}");
+            //TODO: make proper callback handling
+            var chatId = e.CallbackQuery.Message.Chat.Id;
+            if (e.CallbackQuery.Data == "fromCountry")
+                if (UserStates[chatId].CurrentState == UserState.InFlightsMenu)
+                    UserStates[chatId].SetState(UserState.DepartureCountryInputStarted);
+            if (e.CallbackQuery.Data == "toCountry")
+                if (UserStates[chatId].CurrentState == UserState.InFlightsMenu)
+                    UserStates[chatId].SetState(UserState.ArrivalCountryInputStarted);
+
+            await _callbacks
+                .Where(c => c.Query.Contains(e.CallbackQuery.Data))
+                .DefaultIfEmpty(new ErrorCallback())
+                .Single()
+                .Execute(e.CallbackQuery.Message, _client, e.CallbackQuery.Message.From);
         }
     }
 }
