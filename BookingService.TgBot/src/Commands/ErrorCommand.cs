@@ -4,7 +4,7 @@ using Telegram.Bot.Types;
 
 namespace BookingService.TgBot
 {
-    public class ErrorCommand : Command
+    public sealed class ErrorCommand : Command
     {
         public override string Name => null;
 
