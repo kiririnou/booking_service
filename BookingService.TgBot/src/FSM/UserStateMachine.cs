@@ -15,7 +15,7 @@ namespace BookingService.TgBot.StateMachine
     }
 
     // TODO: refactor transitions
-    public class UserStateMachine : StateMachineBase<UserState>
+    public sealed class UserStateMachine : StateMachineBase<UserState>
     {
         public UserStateMachine()
         {
@@ -26,6 +26,10 @@ namespace BookingService.TgBot.StateMachine
                 { 
                     new StateTransition(UserState.None, UserState.InMainMenu), 
                     UserState.InMainMenu     
+                },
+                {
+                    new StateTransition(UserState.InMainMenu, UserState.InMainMenu),
+                    UserState.InMainMenu
                 },
                 { 
                     new StateTransition(UserState.InMainMenu, UserState.InReservations), 
@@ -43,7 +47,7 @@ namespace BookingService.TgBot.StateMachine
                     new StateTransition(UserState.InFlightsMenu, UserState.InMainMenu),
                     UserState.InMainMenu
                 },
-                { 
+                {
                     new StateTransition(UserState.InFlightsMenu, UserState.DepartureCountryInputStarted),
                     UserState.DepartureCountryInputStarted
                 },
@@ -51,13 +55,21 @@ namespace BookingService.TgBot.StateMachine
                     new StateTransition(UserState.DepartureCountryInputStarted, UserState.DepartureCountryInputEnded),
                     UserState.DepartureCountryInputEnded
                 },
-                { 
+                {
+                    new StateTransition(UserState.DepartureCountryInputEnded, UserState.InMainMenu),
+                    UserState.InMainMenu
+                },
+                {
                     new StateTransition(UserState.InFlightsMenu, UserState.ArrivalCountryInputStarted),
                     UserState.ArrivalCountryInputStarted
                 },
                 {
                     new StateTransition(UserState.ArrivalCountryInputStarted, UserState.ArrivalCountryInputEnded),
                     UserState.ArrivalCountryInputEnded
+                },
+                {
+                    new StateTransition(UserState.ArrivalCountryInputEnded, UserState.InMainMenu),
+                    UserState.InMainMenu
                 }
             };
         }
