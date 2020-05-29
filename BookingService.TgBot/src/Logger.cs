@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
 
@@ -21,6 +22,13 @@ namespace BookingService.TgBot
                     theme: AnsiConsoleTheme.Code
                 )
                 .CreateLogger();
+        }
+
+        public static void GetState(string username, StateMachine.UserStateMachine userState)
+        {
+            string log = $"\n\t{username}'s current  state: {userState.CurrentState}" +
+                         $"\n\t{username}'s previous  state: {userState.PreviousState}";
+            _logger.Information(log);
         }
     }
 }
