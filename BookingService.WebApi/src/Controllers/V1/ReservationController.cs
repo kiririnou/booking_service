@@ -50,7 +50,8 @@ namespace BookingService.WebApi.Controllers
                 User = new UserResponse
                 {
                     Id = reservation.User.Id,
-                    Name = reservation.User.Name
+                    Name = reservation.User.Name,
+                    TgUid = reservation.User.TgUid
                 }
             }).ToList();
             return Ok(reservationResponse);
@@ -83,7 +84,8 @@ namespace BookingService.WebApi.Controllers
                 User = new UserResponse
                 {
                     Id = reservation.User.Id,
-                    Name = reservation.User.Name
+                    Name = reservation.User.Name,
+                    TgUid = reservation.User.TgUid
                 }
             });
         }
@@ -129,7 +131,8 @@ namespace BookingService.WebApi.Controllers
                 User = new UserResponse
                 {
                     Id = reservation.User.Id,
-                    Name = reservation.User.Name
+                    Name = reservation.User.Name,
+                    TgUid = reservation.User.TgUid
                 }
             };
 
@@ -168,7 +171,8 @@ namespace BookingService.WebApi.Controllers
                 User = new UserResponse
                 {
                     Id = reservation.User.Id,
-                    Name = reservation.User.Name
+                    Name = reservation.User.Name,
+                    TgUid = reservation.User.TgUid
                 }
             });
             return NotFound();

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using BookingService.Client.Models;
 using Newtonsoft.Json;
@@ -35,9 +36,11 @@ namespace BookingService.Client
                 UserId = reservation.User.Id
             };
             
+            Console.WriteLine(JsonConvert.SerializeObject(newReservation));
+
             var response = await Client.PostAsync(
                 $"{_url}/reservations", 
-                new StringContent(JsonConvert.SerializeObject(newReservation))
+                new StringContent(JsonConvert.SerializeObject(newReservation), Encoding.UTF8, "application/json")
             );
             return response.IsSuccessStatusCode;
         }
@@ -52,7 +55,7 @@ namespace BookingService.Client
             
             var response = await Client.PutAsync(
                 $"{_url}/reservations",
-                new StringContent(JsonConvert.SerializeObject(newReservation))
+                new StringContent(JsonConvert.SerializeObject(newReservation), Encoding.UTF8, "application/json")
             );
             return response.IsSuccessStatusCode;
         }
