@@ -11,7 +11,9 @@ namespace BookingService.TgBot.StateMachine
         DepartureCountryInputStarted,
         DepartureCountryInputEnded,
         ArrivalCountryInputStarted,
-        ArrivalCountryInputEnded
+        ArrivalCountryInputEnded,
+        DACountryInputStarted,
+        DACountryInputEnded
     }
 
     // TODO: refactor transitions
@@ -69,6 +71,18 @@ namespace BookingService.TgBot.StateMachine
                 },
                 {
                     new StateTransition(UserState.ArrivalCountryInputEnded, UserState.InMainMenu),
+                    UserState.InMainMenu
+                },
+                {
+                    new StateTransition(UserState.InFlightsMenu, UserState.DACountryInputStarted),
+                    UserState.DACountryInputStarted
+                },
+                {
+                    new StateTransition(UserState.DACountryInputStarted, UserState.DACountryInputEnded),
+                    UserState.DACountryInputEnded
+                },
+                {
+                    new StateTransition(UserState.DACountryInputEnded, UserState.InMainMenu),
                     UserState.InMainMenu
                 }
             };

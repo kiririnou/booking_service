@@ -10,7 +10,7 @@ namespace BookingService.TgBot.Callbacks
 {
     public sealed class FlightsMenuCallback : Callback
     {
-        public override string Query => "flightsMenu|fromCountry|toCountry";
+        public override string Query => "flightsMenu|fromCountry|toCountry|fromTo";
 
         public override async Task Execute(Message message, TelegramBotClient client, User from)
         {
@@ -37,6 +37,10 @@ namespace BookingService.TgBot.Callbacks
                         new []
                         {
                             InlineKeyboardButton.WithCallbackData("To", "toCountry")        // TODO: change name
+                        },
+                        new []
+                        {
+                            InlineKeyboardButton.WithCallbackData("From... To...", "fromTo")
                         },
                         new []
                         {
@@ -90,7 +94,8 @@ namespace BookingService.TgBot.Callbacks
                         text: 
                             $"Id: {flight.Id}\n" +
                             $"From: {flight.From.Name}\n" + 
-                            $"To: {flight.To.Name}",
+                            $"To: {flight.To.Name}" +
+                            $"Date: {flight.Departure.ToString("dd-MM-yyyy HH:mm:ss")}",
                         replyMarkup: new InlineKeyboardMarkup(new []
                         {
                             new []
@@ -159,7 +164,79 @@ namespace BookingService.TgBot.Callbacks
                         text: 
                             $"Id: {flight.Id}\n" +
                             $"From: {flight.From.Name}\n" + 
-                            $"To: {flight.To.Name}",
+                            $"To: {flight.To.Name}" +
+                            $"Date: {flight.Departure.ToString("dd-MM-yyyy HH:mm:ss")}",
+                        replyMarkup: new InlineKeyboardMarkup(new []
+                        {
+                            new []
+                            {
+                                InlineKeyboardButton.WithCallbackData("Create reservation", "createReservation")
+                            }
+                        }) 
+                    );
+                }
+
+                // Print message with button to return to main menu
+                await client.SendTextMessageAsync(
+                    chatId: message.Chat.Id,
+                    text: "Choose an action:",
+                    replyMarkup: new InlineKeyboardMarkup(new []
+                    {
+                        new []
+                        {
+                            InlineKeyboardButton.WithCallbackData("Back to menu", "menu")
+                        }
+                    })
+                );
+            }
+            else if (Bot.UserStates[message.Chat.Id].CurrentState == UserState.DACountryInputStarted)
+            {
+                answer = "Please, reply on this message with name country of departure and arrival(for example, Ukraine USA):";
+                await client.SendTextMessageAsync(
+                    chatId: message.Chat.Id,
+                    text: answer,
+                    replyMarkup: new ForceReplyMarkup()
+                );
+
+                Bot.UserStates[message.Chat.Id].SetState(StateMachine.UserState.DACountryInputEnded);
+            }
+            else if (Bot.UserStates[message.Chat.Id].CurrentState == UserState.DACountryInputEnded)
+            {
+                string[] countries = message.Text.Split(" ").ToArray();
+                // Command logic
+                var flights = (await ifl.GetFlightsAsync())
+                    .Where(f => f.From.Name == countries[0] && f.To.Name == countries[1])
+                    .ToList();
+
+                // Show all found flights
+                if (flights == null)
+                {
+                    await client.SendTextMessageAsync(
+                        chatId: message.Chat.Id,
+                        text: "No flights with such parameters yet. Sorry for inconvenience.",
+                        replyMarkup: new InlineKeyboardMarkup(new []
+                        {
+                            new []
+                            {
+                                InlineKeyboardButton.WithCallbackData("Back to menu", "menu")
+                            }
+                        })
+                    );
+                }
+                else
+                {
+                    await client.SendTextMessageAsync(
+                        chatId: message.Chat.Id,
+                        text: $"Found {flights.Count} flights"
+                    );
+                    foreach (var flight in flights)
+                        await client.SendTextMessageAsync(
+                        chatId: message.Chat.Id,
+                        text: 
+                            $"Id: {flight.Id}\n" +
+                            $"From: {flight.From.Name}\n" + 
+                            $"To: {flight.To.Name}" +
+                            $"Date: {flight.Departure.ToString("dd-MM-yyyy HH:mm:ss")}",
                         replyMarkup: new InlineKeyboardMarkup(new []
                         {
                             new []

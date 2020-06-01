@@ -103,7 +103,6 @@ namespace BookingService.TgBot
         {
             Logger.Get().Information($"[Callback] {e.CallbackQuery.From.FirstName}: {e.CallbackQuery.Data}");
 
-            // Logger.Get().Debug($"{e.CallbackQuery.Data}");
             //TODO: make proper callback handling
             var chatId = e.CallbackQuery.Message.Chat.Id;
             if (e.CallbackQuery.Data == "fromCountry")
@@ -112,6 +111,9 @@ namespace BookingService.TgBot
             if (e.CallbackQuery.Data == "toCountry")
                 if (UserStates[chatId].CurrentState == UserState.InFlightsMenu)
                     UserStates[chatId].SetState(UserState.ArrivalCountryInputStarted);
+            if (e.CallbackQuery.Data == "fromTo")
+                if (UserStates[chatId].CurrentState == UserState.InFlightsMenu)
+                    UserStates[chatId].SetState(UserState.DACountryInputStarted);
 
             await _callbacks
                 .Where(c => c.Query.Contains(e.CallbackQuery.Data))
