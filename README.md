@@ -20,6 +20,7 @@ Service consists of:
 Available commands:
  - /start
  - /help
+ - /menu
 ---
 ### Development 
 To start all services:
