@@ -61,6 +61,10 @@ namespace BookingService.TgBot.Callbacks
                             new []
                             {
                                 InlineKeyboardButton.WithCallbackData("Get info in QR code", "generateQRCode")
+                            },
+                            new []
+                            {
+                                InlineKeyboardButton.WithCallbackData("Delete resrvation", "deleteResrvation")
                             }
                         })
                 );

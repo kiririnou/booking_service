@@ -79,47 +79,70 @@ namespace BookingService.TgBot
 
         private static async void OnMessage(object sender, MessageEventArgs e)
         {
-            Logger.Get().Information($"[Message] {e.Message.From.FirstName}: {e.Message.Text}");
+            try
+            {
+                Logger.Get().Information($"[Message] {e.Message.From.FirstName}: {e.Message.Text}");
 
-            if (e.Message.ReplyToMessage != null)
-                if (e.Message.ReplyToMessage.From.IsBot)
-                {
-                    await _callbacks
-                        .Where(c => c.Query.Contains("fromCountry"))
-                        .SingleOrDefault()
-                        .Execute(e.Message, _client, e.Message.From);
-                    return;
-                }
+                if (e.Message.ReplyToMessage != null)
+                    if (e.Message.ReplyToMessage.From.IsBot)
+                    {
+                        await _callbacks
+                            .Where(c => c.Query.Contains("fromCountry"))
+                            .DefaultIfEmpty(new ErrorCallback())
+                            .Single()
+                            .Execute(e.Message, _client, e.Message.From);
+                        return;
+                    }
 
-            if (e.Message.Type == MessageType.Text)
-                _commands
-                    .Where(c => c.Contains(e.Message.Text))
-                    .DefaultIfEmpty(new ErrorCommand())
-                    .Single()
-                    .Execute(e.Message, _client);
+                if (e.Message.Type == MessageType.Text)
+                    _commands
+                        .Where(c => c.Contains(e.Message.Text))
+                        .DefaultIfEmpty(new ErrorCommand())
+                        .Single()
+                        .Execute(e.Message, _client);
+            }
+            catch (Exception ex)
+            {
+                Logger.Get().Error($"Error: {ex.Message}");
+                await _client.SendTextMessageAsync(
+                    chatId: e.Message.Chat.Id,
+                    text: $"An error occurred\n{ex.Message}"
+                );
+            }
         }
 
         private static async void OnCallbackQuery(object sender, CallbackQueryEventArgs e)
         {
-            Logger.Get().Information($"[Callback] {e.CallbackQuery.From.FirstName}: {e.CallbackQuery.Data}");
+            try
+            {
+                Logger.Get().Information($"[Callback] {e.CallbackQuery.From.FirstName}: {e. CallbackQuery.Data}");
 
-            //TODO: make proper callback handling
-            var chatId = e.CallbackQuery.Message.Chat.Id;
-            if (e.CallbackQuery.Data == "fromCountry")
-                if (UserStates[chatId].CurrentState == UserState.InFlightsMenu)
-                    UserStates[chatId].SetState(UserState.DepartureCountryInputStarted);
-            if (e.CallbackQuery.Data == "toCountry")
-                if (UserStates[chatId].CurrentState == UserState.InFlightsMenu)
-                    UserStates[chatId].SetState(UserState.ArrivalCountryInputStarted);
-            if (e.CallbackQuery.Data == "fromTo")
-                if (UserStates[chatId].CurrentState == UserState.InFlightsMenu)
-                    UserStates[chatId].SetState(UserState.DACountryInputStarted);
+                //TODO: make proper callback handling
+                var chatId = e.CallbackQuery.Message.Chat.Id;
+                if (e.CallbackQuery.Data == "fromCountry")
+                    if (UserStates[chatId].CurrentState == UserState.InFlightsMenu)
+                        UserStates[chatId].SetState(UserState.DepartureCountryInputStarted) ;
+                if (e.CallbackQuery.Data == "toCountry")
+                    if (UserStates[chatId].CurrentState == UserState.InFlightsMenu)
+                        UserStates[chatId].SetState(UserState.ArrivalCountryInputStarted);
+                if (e.CallbackQuery.Data == "fromTo")
+                    if (UserStates[chatId].CurrentState == UserState.InFlightsMenu)
+                        UserStates[chatId].SetState(UserState.DACountryInputStarted);
 
-            await _callbacks
-                .Where(c => c.Query.Contains(e.CallbackQuery.Data))
-                .DefaultIfEmpty(new ErrorCallback())
-                .Single()
-                .Execute(e.CallbackQuery.Message, _client, e.CallbackQuery.Message.From);
+                await _callbacks
+                    .Where(c => c.Query.Contains(e.CallbackQuery.Data))
+                    .DefaultIfEmpty(new ErrorCallback())
+                    .Single()
+                    .Execute(e.CallbackQuery.Message, _client, e.CallbackQuery.Message. From);
+            }
+            catch (Exception ex)
+            {
+                Logger.Get().Error($"Error: {ex.Message}");
+                await _client.SendTextMessageAsync(
+                    chatId: e.CallbackQuery.Message.Chat.Id,
+                    text: $"An error occurred\n{ex.Message}"
+                );
+            }
         }
     }
 }
