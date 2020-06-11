@@ -42,14 +42,28 @@ services:
   client: 
     build: ./BookingService.Client/ 
     volumes:
-      - ./BookingService.Client/out:/out
+      - out:/out
     working_dir: /app/
     command: /bin/sh /app/copy.sh
 
   tg_bot:
     build: ./BookingService.TgBot/
+    restart: always
+    volumes:
+      - out:/out
+    depends_on:
+      - "client"
+      - "webapi"
+    ports:
+      - "1234:1234"
+    command: /bin/sh /app/copy.sh
     stdin_open: true
     tty: true
+    networks:
+      - "k-network"
+
+volumes:
+  out:
 
 networks:
   k-network:
