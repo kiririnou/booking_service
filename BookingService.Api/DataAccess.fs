@@ -19,7 +19,7 @@ let getAllEntitiesFromTable
                     : Task<'T list> =
     connectionString
     |> Sql.connect
-    |> Sql.query (sprintf "SELECT * FROM %s" table)
+    |> Sql.query $"SELECT * FROM {table}"
     |> Sql.executeAsync func
 
 let getEntityById 
@@ -29,7 +29,7 @@ let getEntityById
         : Task<'T list> =
     connectionString
     |> Sql.connect
-    |> Sql.query (sprintf "SELECT * FROM %s WHERE Id = @id" table)
+    |> Sql.query $"SELECT * FROM {table} WHERE Id = @id"
     |> Sql.parameters [ "@id", Sql.int id ]
     |> Sql.executeAsync func
 
@@ -41,10 +41,10 @@ let insertEntityToTable
                     : Task<int> =
     connectionString
     |> Sql.connect
-    |> Sql.query ( sprintf "INSERT INTO %s (%s) VALUES (%s)" 
-                            table 
-                            (columns        |> String.concat ", ") 
-                            (parameterNames |> String.concat ", "))
+    |> Sql.query (sprintf "INSERT INTO %s (%s) VALUES (%s)" 
+                           table 
+                           (columns        |> String.concat ", ") 
+                           (parameterNames |> String.concat ", "))
     |> Sql.parameters parameters
     |> Sql.executeNonQueryAsync
 
