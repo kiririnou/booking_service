@@ -5,31 +5,6 @@ open BookingService.Models
 open BookingService.Contracts
 open System.Threading.Tasks
 
-//let connectionString : string =
-//    Sql.host "192.168.1.122"
-//    |> Sql.database "db"
-//    |> Sql.username "postgres"
-//    |> Sql.password "postgres"
-//    |> Sql.port 5432
-//    |> Sql.formatConnectionString
-
-//let getAllNotes (connString : string) =
-//    connString
-//    |> Sql.connect
-//    |> Sql.query "select * from Notes"
-//    |> Sql.executeAsync (fun read ->
-//        {
-//            Id = read.int "id"
-//            Text = read.textOrNone "text"
-//        })
-
-//let addNote (connString : string) (note : NewNote) =
-//    connString
-//    |> Sql.connect
-//    |> Sql.query "insert into Notes (Text) values (@text)"
-//    |> Sql.parameters [ "@text", Sql.text note.Text ]
-//    |> Sql.executeNonQueryAsync
-
 let connectionString = 
     Sql.host "192.168.1.122"
     |> Sql.database "FlightDB"
