@@ -1,7 +1,5 @@
-/bin
-
-/obj
-
-/.vscode
-
-/.idea
+**/bin
+**/obj
+**/.vscode
+**/.idea
+**/.vs

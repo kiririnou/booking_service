@@ -1,13 +1,63 @@
-// Learn more about F# at http://docs.microsoft.com/dotnet/fsharp
+﻿module BookingService.App
 
 open System
+open Microsoft.AspNetCore.Builder
+open Microsoft.AspNetCore.Hosting
+open Microsoft.Extensions.Hosting
+open Microsoft.Extensions.Logging
+open Microsoft.Extensions.DependencyInjection
+open Giraffe
+open BookingService.Handler
+open Microsoft.AspNetCore.Http
 
-// Define a function to construct a message to print
-let from whom =
-    sprintf "from %s" whom
+let webApp = 
+    choose [
+        subRouteCi "/api"
+            (choose [
+                subRouteCi "/users" 
+                    (choose [
+                        GET >=> choose[
+                            routex "(/?)" >=> handleGetUsers
+                            routef "/%i" handleGetUserById
+                            routex "/test(/?)" >=> handleGetUsersTest
+                            routef "/test/%i" handleGetUserByIdTest
+                        ]
+                        POST >=> choose [
+                            routex "(/?)" >=> handleCreateUser
+                            routex "/test(/?)" >=> handleCreateUserTest
+                        ]
+                    ])
+            ])
+        RequestErrors.notFound (json notFound)
+    ]
+
+let errorHandler (ex : Exception) (logger : ILogger) =
+    logger.LogError(ex, "An unhandled exception has occurred while executing the request.")
+    clearResponse >=> setStatusCode 500 >=> text ex.Message
+
+let configureApp (app : IApplicationBuilder) =
+    app.UseGiraffeErrorHandler(errorHandler)
+       .UseGiraffe webApp
+
+let configureServices (services : IServiceCollection) =
+    services.AddGiraffe() |> ignore
+
+let configureLogging (logBuilder : ILoggingBuilder) = 
+    logBuilder.AddConsole()
+              .AddDebug() |> ignore
 
 [<EntryPoint>]
-let main argv =
-    let message = from "F#" // Call the function
-    printfn "Hello world %s" message
-    0 // return an integer exit code
+let main _ =
+    Host.CreateDefaultBuilder()
+        .ConfigureWebHostDefaults(
+            fun webHostBuilder ->
+                webHostBuilder
+                    .UseKestrel()
+                    .Configure(configureApp)
+                    .ConfigureServices(configureServices)
+                    .ConfigureLogging(configureLogging)
+                    |> ignore
+            )
+        .Build()
+        .Run()
+    0
