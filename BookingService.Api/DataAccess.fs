@@ -14,19 +14,19 @@ let connectionString =
     |> Sql.formatConnectionString
 
 let getAllEntitiesFromTable 
-                    (table : string) 
-                    (func  : RowReader -> 'T) 
-                    : Task<'T list> =
+                (table : string) 
+                (func  : RowReader -> 'T) 
+                : Task<'T list> =
     connectionString
     |> Sql.connect
     |> Sql.query $"SELECT * FROM {table}"
     |> Sql.executeAsync func
 
 let getEntityById 
-        (id : int)
-        (table : string)
-        (func  : RowReader -> 'T)
-        : Task<'T list> =
+                (id : int)
+                (table : string)
+                (func  : RowReader -> 'T)
+                : Task<'T list> =
     connectionString
     |> Sql.connect
     |> Sql.query $"SELECT * FROM {table} WHERE Id = @id"
@@ -34,22 +34,22 @@ let getEntityById
     |> Sql.executeAsync func
 
 let insertEntityToTable
-                    (table   : string)
-                    (columns : string list)
-                    (parameterNames : string list)
-                    (parameters     : (string * SqlValue) list)
-                    : Task<int> =
+                (table   : string)
+                (columns : string list)
+                (parameterNames : string list)
+                (parameters     : (string * SqlValue) list)
+                : Task<int> =
+    let _columns = columns |> String.concat ", "
+    let _parameterNames = parameterNames |> String.concat ", "
+
     connectionString
     |> Sql.connect
-    |> Sql.query (sprintf "INSERT INTO %s (%s) VALUES (%s)" 
-                           table 
-                           (columns        |> String.concat ", ") 
-                           (parameterNames |> String.concat ", "))
+    |> Sql.query $"INSERT INTO {table} ({_columns}) VALUES ({_parameterNames})" 
     |> Sql.parameters parameters
     |> Sql.executeNonQueryAsync
 
-// ============== Test ==============
-let getAllUsersTest =
+// ============== User ==============
+let getAllUsers =
     getAllEntitiesFromTable 
         "Users" 
         (fun read ->
@@ -59,7 +59,7 @@ let getAllUsersTest =
                 TelegramId = read.text "telegramid"
             } : User)
 
-let getUserByIdTest (id : int) =
+let getUserById (id : int) =
     getEntityById 
         id 
         "Users" 
@@ -70,46 +70,13 @@ let getUserByIdTest (id : int) =
                 TelegramId = read.text "telegramid"
             } : User)
 
-let insertUserTest (user : CreateOrUpdateUserRequest) = 
+let insertUser (user : CreateOrUpdateUserRequest) = 
     insertEntityToTable
         "Users"
         [ "Name";  "TelegramId"  ]
         [ "@name"; "@telegramId" ]
         [ "@name",       Sql.text user.Name; 
-          "@telegramId", Sql.text user.TelegramId ]
-
-// ============== User ==============
-
-let getAllUsers : Task<User list> =
-    connectionString
-    |> Sql.connect
-    |> Sql.query "SELECT * FROM Users"
-    |> Sql.executeAsync (fun read ->
-        {
-            Id = read.int "id"
-            Name = read.text "name"
-            TelegramId = read.text "telegramid"
-        })
-
-let getUserById (id : int) : Task<User list> =
-    connectionString
-    |> Sql.connect
-    |> Sql.query "SELECT * FROM Users WHERE Id = @id"
-    |> Sql.parameters [ "@id", Sql.int id ]
-    |> Sql.executeAsync (fun read -> 
-        {
-            Id = read.int "id"
-            Name = read.text "name"
-            TelegramId = read.text "telegramid"
-        })
-
-let createUser (user : CreateOrUpdateUserRequest) =
-    connectionString
-    |> Sql.connect
-    |> Sql.query @"
-        INSERT INTO Users (Name, TelegramId) VALUES (@name, @telegramId)"
-    |> Sql.parameters [ "@name", Sql.text user.Name; "@telegramId", Sql.text user.TelegramId ]
-    |> Sql.executeNonQueryAsync
+          "@telegramId", Sql.text user.TgUid ]
 
 // ============== Country ==============
 

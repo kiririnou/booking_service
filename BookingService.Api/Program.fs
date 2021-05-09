@@ -8,7 +8,6 @@ open Microsoft.Extensions.Logging
 open Microsoft.Extensions.DependencyInjection
 open Giraffe
 open BookingService.Handler
-open Microsoft.AspNetCore.Http
 
 let webApp = 
     choose [
@@ -19,12 +18,9 @@ let webApp =
                         GET >=> choose[
                             routex "(/?)" >=> handleGetUsers
                             routef "/%i" handleGetUserById
-                            routex "/test(/?)" >=> handleGetUsersTest
-                            routef "/test/%i" handleGetUserByIdTest
                         ]
                         POST >=> choose [
                             routex "(/?)" >=> handleCreateUser
-                            routex "/test(/?)" >=> handleCreateUserTest
                         ]
                     ])
             ])
