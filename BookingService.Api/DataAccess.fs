@@ -1,7 +1,6 @@
 ﻿module BookingService.DataAccess
 
 open Npgsql.FSharp
-open BookingService.Models
 open BookingService.Contracts
 open System.Threading.Tasks
 
@@ -23,9 +22,9 @@ let getAllEntitiesFromTable
     |> Sql.executeAsync func
 
 let getEntityById 
-                (id : int)
-                (table : string)
-                (func  : RowReader -> 'T)
+                (id     : int)
+                (table  : string)
+                (func   : RowReader -> 'T)
                 : Task<'T list> =
     connectionString
     |> Sql.connect
@@ -38,45 +37,52 @@ let insertEntityToTable
                 (columns : string list)
                 (parameterNames : string list)
                 (parameters     : (string * SqlValue) list)
-                : Task<int> =
+                (func    : RowReader -> 'T)
+                : Task<'T> =
     let _columns = columns |> String.concat ", "
     let _parameterNames = parameterNames |> String.concat ", "
 
     connectionString
     |> Sql.connect
-    |> Sql.query $"INSERT INTO {table} ({_columns}) VALUES ({_parameterNames})" 
+    |> Sql.query $"INSERT INTO {table} ({_columns}) VALUES ({_parameterNames}) RETURNING *" 
     |> Sql.parameters parameters
-    |> Sql.executeNonQueryAsync
+    |> Sql.executeRowAsync func
 
 // ============== User ==============
-let getAllUsers =
+let getAllUsers () =
     getAllEntitiesFromTable 
-        "Users" 
+        "users" 
         (fun read ->
             {
                 Id = read.int "id"
                 Name = read.text "name"
-                TelegramId = read.text "telegramid"
-            } : User)
+                TgUid = read.text "telegramid"
+            })
 
 let getUserById (id : int) =
     getEntityById 
         id 
-        "Users" 
+        "users" 
         (fun read -> 
             {
                 Id = read.int "id"
                 Name = read.text "name"
-                TelegramId = read.text "telegramid"
-            } : User)
+                TgUid = read.text "telegramid"
+            })
 
 let insertUser (user : CreateOrUpdateUserRequest) = 
     insertEntityToTable
-        "Users"
+        "users"
         [ "Name";  "TelegramId"  ]
         [ "@name"; "@telegramId" ]
         [ "@name",       Sql.text user.Name; 
           "@telegramId", Sql.text user.TgUid ]
+        (fun read ->
+            {
+                Id = read.int "id"
+                Name = read.text "name"
+                TgUid = read.text "telegramid"
+            })
 
 // ============== Country ==============
 

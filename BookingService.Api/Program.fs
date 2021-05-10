@@ -8,6 +8,7 @@ open Microsoft.Extensions.Logging
 open Microsoft.Extensions.DependencyInjection
 open Giraffe
 open BookingService.Handler
+open Microsoft.AspNetCore.Server.Kestrel.Core
 
 let webApp = 
     choose [
@@ -31,6 +32,9 @@ let errorHandler (ex : Exception) (logger : ILogger) =
     logger.LogError(ex, "An unhandled exception has occurred while executing the request.")
     clearResponse >=> setStatusCode 500 >=> text ex.Message
 
+let configureKestrel (opts : KestrelServerOptions) =
+    opts.DisableStringReuse <- true
+
 let configureApp (app : IApplicationBuilder) =
     app.UseGiraffeErrorHandler(errorHandler)
        .UseGiraffe webApp
@@ -50,6 +54,7 @@ let main _ =
                 webHostBuilder
                     .UseKestrel()
                     .Configure(configureApp)
+                    .ConfigureKestrel(configureKestrel)
                     .ConfigureServices(configureServices)
                     .ConfigureLogging(configureLogging)
                     |> ignore
