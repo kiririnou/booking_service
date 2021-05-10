@@ -1,9 +1,11 @@
-/bin
+**/bin
 
-/obj
+**/obj
 
-/.vscode
+**/.vscode
 
-/.idea
+**/.idea
+
+**/.vs
 
 BookingService.Client.dll

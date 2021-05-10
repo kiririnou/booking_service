@@ -4,9 +4,9 @@ namespace BookingService.Client.Models
 {
     public class NewReservation
     {
-        [JsonProperty(PropertyName = "flightId")]
+        [JsonProperty(PropertyName = "flightid")]
         public int FlightId { get; set; }
-        [JsonProperty(PropertyName = "userId")]
+        [JsonProperty(PropertyName = "userid")]
         public int UserId   { get; set; }
     }
 }

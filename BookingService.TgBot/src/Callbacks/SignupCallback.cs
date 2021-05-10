@@ -29,7 +29,8 @@ namespace BookingService.TgBot.Callbacks
             }
 
             IUser iuser = new ApiClientWrapper(AppSettings.GetEntry("URL"));
-            var users = (await iuser.GetUsersAsync())
+            var ausers = (await iuser.GetUsersAsync());
+            var users = ausers
                 .Where(u => u.TgUid == message.Chat.Id.ToString())
                 .ToList();
 

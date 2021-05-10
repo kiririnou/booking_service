@@ -45,6 +45,6 @@ type FlightResponse = {
 
 type ReservationResponse = {
     Id          : int
-    FlightId    : FlightResponse
-    UserId      : UserResponse
+    Flight      : FlightResponse
+    User        : UserResponse
 }

@@ -16,12 +16,42 @@ let webApp =
             (choose [
                 subRouteCi "/users" 
                     (choose [
-                        GET >=> choose[
+                        GET >=> choose [
                             routex "(/?)" >=> handleGetUsers
                             routef "/%i" handleGetUserById
                         ]
                         POST >=> choose [
                             routex "(/?)" >=> handleCreateUser
+                        ]
+                    ])
+                subRouteCi "/countries"
+                    (choose [
+                        GET >=> choose [
+                            routex "(/?)" >=> handleGetCountries
+                            routef "/%i" handleGetCountryById
+                        ]
+                        POST >=> choose [
+                            routex "(/?)" >=> handleCreateCountry
+                        ]
+                    ])
+                subRouteCi "/flights"
+                    (choose [
+                        GET >=> choose [
+                            routex "(/?)" >=> handleGetFlights
+                            routef "/%i" handleGetFlightById
+                        ]
+                        POST >=> choose [
+                            routex "(/?)" >=> handleCreateFlight
+                        ]
+                    ])
+                subRouteCi "/reservations"
+                    (choose [
+                        GET >=> choose [
+                            routex "(/?)" >=> handleGetReservations
+                            routef "/%i" handleGetReservationById
+                        ]
+                        POST >=> choose [
+                            routex "(/?)" >=> handleCreateReservation
                         ]
                     ])
             ])
