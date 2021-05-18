@@ -8,7 +8,7 @@ services:
     environment: 
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
-      POSTGRES_DB: db
+      POSTGRES_DB: FlightDB
     volumes: 
       - ./postgres:/var/lib/postgresql/data
     ports:
@@ -29,7 +29,7 @@ services:
       - "k-network"
 
   webapi:
-    build: ./BookingService.WebApi/
+    build: ./BookingService.Api/
     restart: always
     depends_on: 
       - "postgres"
@@ -52,7 +52,6 @@ services:
     volumes:
       - out:/out
     depends_on:
-      - "client"
       - "webapi"
     ports:
       - "1234:1234"
